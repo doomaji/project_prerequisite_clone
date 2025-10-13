@@ -1,21 +1,23 @@
 package jm.task.core.jdbc.model;
 
-import javax.persistence.Column;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
-@Table
+@Entity
+@Table(name="users", uniqueConstraints = {@UniqueConstraint(columnNames = {"ID"})})
 public class User {
+
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="ID",  unique = true, nullable = false)
     private Long id;
 
-    @Column
+    @Column(name="Name", length = 50, nullable = false)
     private String name;
 
-    @Column
+    @Column(name="LastName", length = 50, nullable = false)
     private String lastName;
 
-    @Column
+    @Column(name="Age", length = 5, nullable = false)
     private Byte age;
 
     public User() {

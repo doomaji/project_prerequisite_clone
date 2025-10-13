@@ -2,6 +2,8 @@ package jm.task.core.jdbc.util;
 
 import java.sql.*;
 import java.util.Properties;
+
+import jm.task.core.jdbc.model.User;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
@@ -23,26 +25,34 @@ public class Util {
         return connection;
     }
 
-    public class HibernateUtil {
+    public static class HibernateUtil {
 
         private static SessionFactory sessionFactory;
 
         private static SessionFactory buildSessionFactory() {
             try {
-                // Create the SessionFactory from hibernate.cfg.xml
                 Configuration configuration = new Configuration();
-                configuration.configure("hibernate.cfg.xml");
-                System.out.println("Hibernate Configuration loaded");
+
+                //Create Properties, can be read from property files too
+                Properties props = new Properties();
+                props.put("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver");
+                props.put("hibernate.connection.url", "jdbc:mysql://localhost:3306/example_schema");
+                props.put("hibernate.connection.username", "root");
+                props.put("hibernate.connection.password", "Password123");
+                props.put("hibernate.current_session_context_class", "thread");
+
+                configuration.setProperties(props);
+
+                configuration.addAnnotatedClass(User.class);
 
                 ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
-                System.out.println("Hibernate serviceRegistry created");
+                System.out.println("Hibernate Java Config serviceRegistry created");
 
-                SessionFactory sessionFactory = configuration.buildSessionFactory(serviceRegistry);
+                sessionFactory = configuration.buildSessionFactory(serviceRegistry);
 
                 return sessionFactory;
             }
             catch (Throwable ex) {
-                // Make sure you log the exception, as it might be swallowed
                 System.err.println("Initial SessionFactory creation failed." + ex);
                 throw new ExceptionInInitializerError(ex);
             }
